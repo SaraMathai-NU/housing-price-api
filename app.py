@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import joblib
 import numpy as np
+import os
 
 app = Flask(__name__)
 
@@ -21,7 +22,7 @@ FEATURE_NAMES = [
 class HousingModel(nn.Module):
     def __init__(self):
         super(HousingModel, self).__init__()
-        self.model = nn.Sequential(
+        self.linear_relu_stack = nn.Sequential(
             nn.Linear(8, 64),
             nn.ReLU(),
             nn.Linear(64, 32),
@@ -30,7 +31,7 @@ class HousingModel(nn.Module):
         )
 
     def forward(self, x):
-        return self.model(x)
+        return self.linear_relu_stack(x)
 
 # Load scaler
 scaler = joblib.load("scaler.pkl")
@@ -80,4 +81,5 @@ def predict():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
